@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 from impact_module import dynamic, impact_event, apply_impact, alpha
 
+
 def simulate(initial_omega, steps=10):
     theta = -alpha  # Αρχική γωνία ίση με γωνία πρόσκρουσης
     omega = initial_omega
@@ -23,7 +24,7 @@ def simulate(initial_omega, steps=10):
         # Επίλυση swing phase
         sol = solve_ivp(dynamic, [t, t + 10], [theta, omega],
                         events=impact_event, max_step=0.001, rtol=1e-6)
-
+        
         # Αποθήκευση αποτελεσμάτων
         times.extend(sol.t)
         thetas.extend(sol.y[0])
@@ -41,7 +42,7 @@ def simulate(initial_omega, steps=10):
 
 if __name__ == "__main__":
     # Παράμετροι προσομοίωσης
-    initial_omega = 0.0  # rad/s
+    initial_omega = 5.0  # rad/s
 
     times, thetas, omegas = simulate(initial_omega)
 
