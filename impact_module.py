@@ -13,7 +13,7 @@ g = 9.81
 l = 1.0
 number_of_legs = 10
 alpha = (2*np.pi) / number_of_legs  # Γωνία μεταξύ ποδιών
-gamma = 0.15  # Γωνία κλίσης εδάφους 
+gamma = 0.2 # Γωνία κλίσης εδάφους 
 omega_treshold = ( ((2*g)/l) * (1 - np.cos(gamma - alpha)) ) ** 0.5
 
 def dynamic(t, y):
@@ -36,16 +36,19 @@ impact_event.terminal = True
 
 def apply_impact(theta, omega):
     """
-    Υπολογισμός ταχύτητας μετά την κρούση.
+    Apply impact map based on Tedrake's book (rimless wheel).
+    Handles three cases based on omega threshold.
     """
-    if (omega > omega_treshold) :
-        theta_dot_new =  np.cos(2 * alpha) * ( ( omega**2 + ((4*g)/l)*np.sin(alpha)*np.sin(gamma) ) ** 0.5)
-    
-    elif (-omega_treshold < omega and  omega < omega_treshold):
-        theta_dot_new = (-theta) * np.cos(2*alpha)
-    
-    elif (omega < (-omega_treshold)):
-        theta_dot_new =  - (np.cos(2 * alpha) * ( ( omega**2 + ((4*g)/l)*np.sin(alpha)*np.sin(gamma) ) ** 0.5) )
+    if omega > omega_treshold:
+        omega_after = np.cos(2 * alpha) * np.sqrt(omega**2 + (4 * g / l) * np.sin(alpha) * np.sin(gamma))
         
-    
-    return -alpha, theta_dot_new
+    elif -omega_treshold < omega < omega_treshold:
+        omega_after = -np.cos(2 * alpha) * omega
+        
+    elif omega < -omega_treshold:
+        omega_after = -np.cos(2 * alpha) * np.sqrt(omega**2 + (4 * g / l) * np.sin(alpha) * np.sin(gamma))
+        
+    else:
+        raise ValueError("Unhandled omega value: {}".format(omega))
+
+    return -alpha, omega_after
